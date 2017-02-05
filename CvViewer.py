@@ -27,8 +27,8 @@ def ProcessImage( frame ) :
 	image = cv2.resize( frame.image, None, fx=0.4, fy=0.4 )
 	# Display the image
 	cv2.imshow( camera.id, image )
-    # Keyboard interruption
-    if cv2.waitKey( 1 ) & 0xFF == 27 :
+	# Keyboard interruption
+	if cv2.waitKey( 1 ) & 0xFF == 27 :
 		global streaming
 		streaming = False
 # Start image acquisition
