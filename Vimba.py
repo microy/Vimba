@@ -38,7 +38,7 @@ def VmbShutdown() :
 # Vimba frame structure
 class VmbFrame( ct.Structure ) :
 	# VmbFrame structure fields
-	_fields_ = [ ( 'buffer', ct.c_void_p ),
+	_fields_ = [ ( 'buffer', ct.POINTER( ct.c_char ) ),
 			( 'bufferSize', ct.c_uint32 ),
 			( 'context', ct.c_void_p * 4 ),
 			( 'receiveStatus', ct.c_int32 ),
