@@ -9,20 +9,10 @@
 import cv2
 import Vimba
 
-# Initialize Vimba
-Vimba.VmbStartup()
-# Initialize the camera
-camera = Vimba.VmbCamera( '50-0503323406' )
-# Open the camera
-camera.Open()
-# Image acquisition indicator
-streaming = False
 # Image callback function
 def ProcessImage( frame ) :
 	# Check the frame
-	if not frame.is_valid :
-		print( 'Invalid frame...' )
-		return
+	if not frame.is_valid : return
 	# Resize image for display
 	image = cv2.resize( frame.image, None, fx=0.4, fy=0.4 )
 	# Display the image
@@ -31,6 +21,13 @@ def ProcessImage( frame ) :
 	if cv2.waitKey( 1 ) & 0xFF == 27 :
 		global streaming
 		streaming = False
+
+# Initialize Vimba
+Vimba.VmbStartup()
+# Initialize the camera
+camera = Vimba.VmbCamera( '50-0503323406' )
+# Open the camera
+camera.Open()
 # Start image acquisition
 streaming = True
 camera.StartCapture( ProcessImage )
