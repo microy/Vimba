@@ -73,6 +73,8 @@ class VmbCamera( object ) :
 		self.handle = ct.c_void_p()
 		# Camera ID (serial number, IP address...)
 		self.id = camera_id
+		# Register the internal frame callback function
+		self.vmb_frame_callback = ct.CFUNCTYPE( None, ct.c_void_p, ct.POINTER( VmbFrame ) )( self.VmbFrameCallback )
 	# Open the camera
 	def Open( self ) :
 		# Connect the camera
@@ -94,8 +96,6 @@ class VmbCamera( object ) :
 	def StartCapture( self, frame_callback, frame_buffer_size = 10 ) :
 		# Register the external frame callback function
 		self.frame_callback = frame_callback
-		# Register the internal frame callback function
-		self.vmb_frame_callback = ct.CFUNCTYPE( None, ct.c_void_p, ct.POINTER( VmbFrame ) )( self.VmbFrameCallback )
 		# Initialize frame buffer
 		self.frame_buffer = []
 		for i in range( frame_buffer_size ) :
