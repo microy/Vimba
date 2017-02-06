@@ -11,8 +11,6 @@
 
 # External dependencies
 import os
-import sys
-import time
 import ctypes as ct
 import numpy as np
 
