@@ -8,6 +8,7 @@
 # External dependencies
 import sys
 import cv2
+import numpy as np
 from PySide import QtCore
 from PySide import QtGui
 import Vimba
@@ -28,9 +29,9 @@ class QtVmbViewer( QtGui.QWidget ) :
 		self.image_widget = QtGui.QLabel( self )
 		self.image_widget.setScaledContents( True )
 		# Widget layout
-		self.layout_global = QtGui.QVBoxLayout( self )
-		self.layout_global.addWidget( self.image_widget )
-		self.layout_global.setSizeConstraint( QtGui.QLayout.SetFixedSize )
+		self.layout = QtGui.QVBoxLayout( self )
+		self.layout.addWidget( self.image_widget )
+		self.layout.setSizeConstraint( QtGui.QLayout.SetFixedSize )
 		# Set the Escape key to close the application
 		QtGui.QShortcut( QtGui.QKeySequence( QtCore.Qt.Key_Escape ), self ).activated.connect( self.close )
 		# Initialize Vimba
@@ -39,22 +40,20 @@ class QtVmbViewer( QtGui.QWidget ) :
 		self.camera = Vimba.VmbCamera( '50-0503323406' )
 		# Open the camera
 		self.camera.Open()
-		# Fix the widget size
-		self.image_widget.setFixedSize( self.camera.width, self.camera.height )
 		# Start image acquisition
 		self.camera.StartCapture(  self.ImageCallback  )
 	# Receive the frame sent by the camera
 	def ImageCallback( self, frame ) :
 		# Check the frame
 		if not frame.is_valid : return
-		# Resize image for display
-		image = cv2.resize( frame.image, None, fx=0.4, fy=0.4 )
-		# Process the images
-		self.update_image.emit( image )
+		# Send the image to the widget
+		self.update_image.emit( frame.image )
 	# Process the given image
 	def UpdateImage( self, image ) :
-		# Convert image color format from BGR to RGB
-		image = cv2.cvtColor( image, cv2.COLOR_GRAYSCALE2RGB )
+		# Resize image for display
+		image = cv2.resize( image, None, fx=0.4, fy=0.4 )
+		# Convert image color format from Grayscale to RGB
+		image = cv2.cvtColor( image, cv2.COLOR_GRAY2RGB )
 		# Create a Qt image
 		qimage = QtGui.QImage( image, image.shape[1], image.shape[0], QtGui.QImage.Format_RGB888 )
 		# Set the image to the Qt widget
