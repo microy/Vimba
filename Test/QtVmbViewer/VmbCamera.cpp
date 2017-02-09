@@ -1,4 +1,5 @@
 #include "VmbCamera.h"
+#include <cstdlib>
 #include <iostream>
 
 using std::cout;
@@ -31,7 +32,7 @@ void VmbCamera::Open() {
 }
 
 // Close the camera
-void VmbCamera::Close {
+void VmbCamera::Close() {
 	// Close the camera
     VmbCameraClose( handle );
 }
@@ -41,7 +42,7 @@ void VmbCamera::StartCapture() {
     // Initialize the frame buffer
     for( int i=0; i<10 ; ++i ) {
         // Allocate accordingly
-        frames[i].buffer = malloc( payloadsize );
+        frames[i].buffer = std::malloc( payloadsize );
         frames[i].bufferSize = payloadsize;
         // Announce the frame
         VmbFrameAnnounce( handle, &frames[i], sizeof( VmbFrame_t ) );
@@ -68,7 +69,7 @@ void VmbCamera::StopCapture() {
 	VmbFrameRevokeAll( handle );
 	// Free the frame buffer
 	for( int i=0; i<10 ; ++i ) {
-		free( frames[i].buffer );
+        std::free( frames[i].buffer );
 	}
 }
 
