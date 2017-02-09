@@ -21,7 +21,7 @@ VmbCamera::~VmbCamera() {
 // Open the camera
 void VmbCamera::Open() {
     // Connect to the camera
-    VmbCameraOpen( id, VmbAccessModeFull, &handle );
+    VmbCameraOpen( id.c_str(), VmbAccessModeFull, &handle );
     // Adjust packet size automatically
     VmbFeatureCommandRun( handle, "GVSPAdjustPacketSize" );
     // Get image parameters

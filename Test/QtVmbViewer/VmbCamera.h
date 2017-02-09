@@ -1,6 +1,7 @@
 #ifndef VMBCAMERA_H
 #define VMBCAMERA_H
 
+#include <string>
 // Vimba SDK dependency
 #include <VimbaC.h>
 
@@ -23,7 +24,7 @@ class VmbCamera {
 	    // Handle to the camera
 	    VmbHandle_t handle;
 		// Identification number of the camera
-		char* id;
+		std::string id;
 	    // Image parameters
 	    VmbInt64_t width;
 	    VmbInt64_t height;
