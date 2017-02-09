@@ -14,6 +14,12 @@ public:
 
     // Allied Vision camera
     VmbCamera* camera;
+
+    // Image callback
+    void ImageCallback();
+
+public slots:
+    void GetFrame( const VmbFrame_t* frame_pointer );
 };
 
 #endif // QTVMBVIEWER_H

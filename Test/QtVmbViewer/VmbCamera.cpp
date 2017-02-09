@@ -42,8 +42,10 @@ void VmbCamera::StartCapture() {
     // Initialize the frame buffer
     for( int i=0; i<10 ; ++i ) {
         // Allocate accordingly
-        frames[i].buffer = std::malloc( payloadsize );
-        frames[i].bufferSize = payloadsize;
+        frames[i].buffer = new VmbUchar_t[ (VmbUint32_t)payloadsize ];
+        frames[i].bufferSize = (VmbUint32_t)payloadsize;
+        // Register this object in the frame context
+        frames[i].context[0] = this;
         // Announce the frame
         VmbFrameAnnounce( handle, &frames[i], sizeof( VmbFrame_t ) );
     }
@@ -69,18 +71,18 @@ void VmbCamera::StopCapture() {
 	VmbFrameRevokeAll( handle );
 	// Free the frame buffer
 	for( int i=0; i<10 ; ++i ) {
-        std::free( frames[i].buffer );
+        delete [] (VmbUchar_t*)frames[i].buffer;
 	}
 }
 
 // The callback that gets executed on every filled frame
 void VMB_CALL VmbCamera::FrameDoneCallback( const VmbHandle_t camera_handle, VmbFrame_t* frame_pointer ) {
 	// Check frame status
-    if ( frame_pointer->receiveStatus == VmbFrameStatusComplete ) {
-        cout << "Frame successfully received" << endl;
-    }
-    else {
-        cout << "Error receiving frame" << endl;
+    if( frame_pointer->receiveStatus == VmbFrameStatusComplete ) {
+        // Get the camera object in the frame context
+        VmbCamera* camera = (VmbCamera*)frame_pointer->context[0];
+        // Emit the frame received signal
+        emit camera->FrameReceived( frame_pointer );
     }
 	// Requeue the frame
     VmbCaptureFrameQueue( camera_handle , frame_pointer , &FrameDoneCallback );

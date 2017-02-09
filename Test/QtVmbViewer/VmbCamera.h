@@ -5,9 +5,14 @@
 #include <string>
 // Vimba SDK dependency
 #include <VimbaC.h>
+// Qt dependency
+#include <QObject>
 
 // Class to access a Gbe camera through Vimba SDK
-class VmbCamera {
+class VmbCamera : public QObject {
+
+    Q_OBJECT
+
 	// Public members
 	public :
 		// Construtor
@@ -20,9 +25,11 @@ class VmbCamera {
 		// Close the camera
 		void Close();
 		// Start the acquisition
-		void StartCapture();
+        void StartCapture();
 		// Stop the acquisition
 		void StopCapture();
+        // Function called by Vimba to receive the frame
+        static void VMB_CALL FrameDoneCallback( const VmbHandle_t camera_handle, VmbFrame_t* frame_pointer );
 
 	    // Handle to the camera
 	    VmbHandle_t handle;
@@ -35,8 +42,9 @@ class VmbCamera {
 	    // Frame buffer
 	    VmbFrame_t frames[10];
 
-	    // Function called by Vimba to receive the frame
-	    static void VMB_CALL FrameDoneCallback( const VmbHandle_t camera_handle, VmbFrame_t* frame_pointer );
+    signals :
+        // Signal to send the received frame
+        void FrameReceived( const VmbFrame_t* frame_pointer );
 };
 
 #endif // VMBCAMERA_H
