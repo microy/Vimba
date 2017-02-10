@@ -7,7 +7,6 @@
 
 # External dependencies
 import sys
-import cv2
 import numpy as np
 from PySide import QtCore
 from PySide import QtGui
