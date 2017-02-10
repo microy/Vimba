@@ -16,7 +16,7 @@ import Vimba
 # Class to display images from an Allied Vision camera
 class QtVmbViewer( QtGui.QWidget ) :
 	# Signal sent to update the image in the widget
-	update_image = QtCore.Signal( np.ndarray )
+	update_image = QtCore.Signal()
 	# Initialization
 	def __init__( self, parent = None ) :
 		# Initialise QWidget
@@ -40,24 +40,25 @@ class QtVmbViewer( QtGui.QWidget ) :
 		self.camera = Vimba.VmbCamera( '50-0503323406' )
 		# Open the camera
 		self.camera.Open()
+		# Create a QImage to store the image from the camera
+		self.image = QtGui.QImage( self.camera.width, self.camera.height, QtGui.QImage.Format_Indexed8 )
+		# Create a indexed color table
+	    self.image.setColorCount(256)
+	    for i in range( 256 ) : self.image.setColor( i, QtGui.qRgb(i, i, i) )
 		# Start image acquisition
 		self.camera.StartCapture(  self.ImageCallback  )
 	# Receive the frame sent by the camera
 	def ImageCallback( self, frame ) :
 		# Check the frame
 		if not frame.is_valid : return
-		# Send the image to the widget
-		self.update_image.emit( frame.image )
+		# Store the image
+		
+		# Update the image in the widget
+		self.update_image.emit()
 	# Process the given image
-	def UpdateImage( self, image ) :
-		# Resize image for display
-		image = cv2.resize( image, None, fx=0.4, fy=0.4 )
-		# Convert image color format from Grayscale to RGB
-		image = cv2.cvtColor( image, cv2.COLOR_GRAY2RGB )
-		# Create a Qt image
-		qimage = QtGui.QImage( image, image.shape[1], image.shape[0], QtGui.QImage.Format_RGB888 )
+	def UpdateImage( self ) :
 		# Set the image to the Qt widget
-		self.image_widget.setPixmap( QtGui.QPixmap.fromImage( qimage ) )
+		self.image_widget.setPixmap( QtGui.QPixmap.fromImage( self.image ) )
 		# Update the widget
 		self.image_widget.update()
 	# Close the widgets
