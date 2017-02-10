@@ -43,16 +43,16 @@ class QtVmbViewer( QtGui.QWidget ) :
 		# Create a QImage to store the image from the camera
 		self.image = QtGui.QImage( self.camera.width, self.camera.height, QtGui.QImage.Format_Indexed8 )
 		# Create a indexed color table
-	    self.image.setColorCount(256)
-	    for i in range( 256 ) : self.image.setColor( i, QtGui.qRgb(i, i, i) )
+		self.image.setColorCount(256)
+		for i in range( 256 ) : self.image.setColor( i, QtGui.qRgb(i, i, i) )
 		# Start image acquisition
 		self.camera.StartCapture(  self.ImageCallback  )
 	# Receive the frame sent by the camera
 	def ImageCallback( self, frame ) :
 		# Check the frame
 		if not frame.is_valid : return
-		# Store the image
-		
+		# Store the camera frame buffer in the Qt image
+		self.image.bits()[0:frame.bufferSize] = frame.buffer[0:frame.bufferSize]
 		# Update the image in the widget
 		self.update_image.emit()
 	# Process the given image
