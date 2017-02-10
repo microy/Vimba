@@ -57,7 +57,7 @@ class QtVmbViewer( QtGui.QWidget ) :
 	# Process the given image
 	def UpdateImage( self ) :
 		# Set the image to the Qt widget
-		self.image_widget.setPixmap( QtGui.QPixmap.fromImage( self.image ) )
+		self.image_widget.setPixmap( QtGui.QPixmap.fromImage( self.image ).scaled( self.camera.width*0.3, self.camera.height*0.3, QtCore.Qt.KeepAspectRatio ) )
 		# Update the widget
 		self.image_widget.update()
 	# Close the widgets
