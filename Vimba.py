@@ -123,8 +123,10 @@ class VmbCamera( object ) :
 		self.frame_buffer = []
 	# Function called by Vimba to receive the frame
 	def VmbFrameCallback( self, camera, frame ) :
-		# Call external frame callback function
-		self.frame_callback( frame.contents )
+		# Check the frame
+		if frame.contents.is_valid :
+			# Call external frame callback function
+			self.frame_callback( frame.contents )
 		# Requeue the frame so it can be filled again
 		vimba.VmbCaptureFrameQueue( camera, frame, self.vmb_frame_callback )
 
