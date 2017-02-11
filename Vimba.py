@@ -52,10 +52,6 @@ class VmbFrame( ct.Structure ) :
 			( 'offsetY', ct.c_uint32 ),
 			( 'frameID', ct.c_uint64 ),
 			( 'timestamp', ct.c_uint64 ) ]
-	# Initialize the image buffer
-	def __init__( self, frame_size ) :
-		self.buffer = ct.create_string_buffer( frame_size )
-		self.bufferSize = ct.c_uint32( frame_size )
 	# Convert the frame to a numpy array
 	@property
 	def image( self ) :
@@ -75,6 +71,8 @@ class VmbCamera( object ) :
 		self.id = camera_id
 		# Register the internal frame callback function
 		self.vmb_frame_callback = ct.CFUNCTYPE( None, ct.c_void_p, ct.POINTER( VmbFrame ) )( self.VmbFrameCallback )
+		# Initialize the frame buffer
+		self.frame_buffer = []
 	# Open the camera
 	def Open( self ) :
 		# Connect the camera
@@ -96,12 +94,13 @@ class VmbCamera( object ) :
 	def StartCapture( self, frame_callback, frame_buffer_size = 10 ) :
 		# Register the external frame callback function
 		self.frame_callback = frame_callback
-		# Initialize frame buffer
-		self.frame_buffer = []
+		# Allocate and announce the frames
 		for i in range( frame_buffer_size ) :
-			self.frame_buffer.append( VmbFrame( self.payloadsize ) )
-		# Announce the frames
-		for i in range( frame_buffer_size ) :
+			# Allocate the frame accordingly
+			self.frame_buffer.append( VmbFrame() )
+			self.frame_buffer[i].buffer = ct.create_string_buffer( self.payloadsize )
+			self.frame_buffer[i].bufferSize = ct.c_uint32( self.payloadsize )
+			# Announce the frame
 			vimba.VmbFrameAnnounce( self.handle, ct.byref( self.frame_buffer[i] ), ct.sizeof( self.frame_buffer[i] ) )
 		# Start capture engine
 		vimba.VmbCaptureStart( self.handle )
@@ -120,6 +119,8 @@ class VmbCamera( object ) :
 		vimba.VmbCaptureEnd( self.handle )
 		# Revoke frames
 		vimba.VmbFrameRevokeAll( self.handle )
+		# Initialize the frame buffer
+		self.frame_buffer = []
 	# Function called by Vimba to receive the frame
 	def VmbFrameCallback( self, camera, frame ) :
 		# Call external frame callback function
