@@ -48,10 +48,8 @@ class QtVmbViewer( QtGui.QWidget ) :
 		self.camera.StartCapture(  self.ImageCallback  )
 	# Receive the frame sent by the camera
 	def ImageCallback( self, frame ) :
-		# Check the frame
-		if not frame.is_valid : return
 		# Store the camera frame buffer in the Qt image
-		self.image.bits()[0:frame.bufferSize] = frame.buffer[0:frame.bufferSize]
+		self.image.bits()[ 0 : frame.bufferSize ] = frame.buffer[ 0 : frame.bufferSize ]
 		# Update the image in the widget
 		self.update_image.emit()
 	# Process the given image
