@@ -41,9 +41,6 @@ error_message = {
 		'-19' :	'Register incomplete'
 }
 
-# Define error variable for checking
-error = 0
-
 # Initialize the Vimba library
 def VmbStartup() :
 	# Get Vimba installation directory
