@@ -108,6 +108,7 @@ class VmbCamera( object ) :
 		if error : print( error_message[error] )
 		# Adjust packet size automatically
 		error = vimba.VmbFeatureCommandRun( self.handle, 'GVSPAdjustPacketSize' )
+		if error : print( error_message[error] )
 		# Query image parameters
 		tmp_value = ct.c_int()
 		error = vimba.VmbFeatureIntGet( self.handle, 'Width', ct.byref( tmp_value ) )
