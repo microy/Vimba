@@ -19,26 +19,26 @@ vimba = None
 
 # Define the error message according to the error code
 error_message = {
-		'0' : 	'Success',
-		'-1' : 	'Unexpected fault in Vimba',
-		'-2' :	'API not started',
-		'-3' :	'Instance not found',
-		'-4' :	'Invalid handle',
-		'-5' :	'Device not open',
-		'-6' :	'Invalid access',
-		'-7' :	'Bad parameter',
-		'-8' :	'Invalid structure size',
-		'-9' :	'More data returned than memory provided',
-		'-10' :	'Wrong feature type',
-		'-11' :	'Invalid value',
-		'-12' :	'Timeout',
-		'-13' :	'Other error',
-		'-14' :	'Resource not available',
-		'-15' :	'Invalid call',
-		'-16' :	'Not transport layer available',
-		'-17' :	'Not implemented',
-		'-18' :	'Not supported',
-		'-19' :	'Register incomplete'
+		0 : 	'Success',
+		-1 : 	'Unexpected fault in Vimba',
+		-2 :	'API not started',
+		-3 :	'Instance not found',
+		-4 :	'Invalid handle',
+		-5 :	'Device not open',
+		-6 :	'Invalid access',
+		-7 :	'Bad parameter',
+		-8 :	'Invalid structure size',
+		-9 :	'More data returned than memory provided',
+		-10 :	'Wrong feature type',
+		-11 :	'Invalid value',
+		-12 :	'Timeout',
+		-13 :	'Other error',
+		-14 :	'Resource not available',
+		-15 :	'Invalid call',
+		-16 :	'Not transport layer available',
+		-17 :	'Not implemented',
+		-18 :	'Not supported',
+		-19 :	'Register incomplete'
 }
 
 # Initialize the Vimba library
