@@ -17,28 +17,28 @@ import numpy as np
 # The Vimba library
 vimba = None
 
-# Define the error message according to the error code
-error_message = {
-		0 : 	'Success',
-		-1 : 	'Unexpected fault in Vimba',
-		-2 :	'API not started',
-		-3 :	'Instance not found',
-		-4 :	'Invalid handle',
-		-5 :	'Device not open',
-		-6 :	'Invalid access',
-		-7 :	'Bad parameter',
-		-8 :	'Invalid structure size',
-		-9 :	'More data returned than memory provided',
-		-10 :	'Wrong feature type',
-		-11 :	'Invalid value',
-		-12 :	'Timeout',
-		-13 :	'Other error',
-		-14 :	'Resource not available',
-		-15 :	'Invalid call',
-		-16 :	'Not transport layer available',
-		-17 :	'Not implemented',
-		-18 :	'Not supported',
-		-19 :	'Register incomplete'
+# Define the error type according to the error code
+error_type = {
+		0 : 	'VmbErrorSuccess',
+		-1 : 	'VmbErrorInternalFault',
+		-2 :	'VmbErrorApiNotStarted',
+		-3 :	'VmbErrorNotFound',
+		-4 :	'VmbErrorBadHandle',
+		-5 :	'VmbErrorDeviceNotOpen',
+		-6 :	'VmbErrorInvalidAccess',
+		-7 :	'VmbErrorBadParameter',
+		-8 :	'VmbErrorStructSize',
+		-9 :	'VmbErrorMoreData',
+		-10 :	'VmbErrorWrongType',
+		-11 :	'VmbErrorInvalidValue',
+		-12 :	'VmbErrorTimeout',
+		-13 :	'VmbErrorOther',
+		-14 :	'VmbErrorResources',
+		-15 :	'VmbErrorInvalidCall',
+		-16 :	'VmbErrorNoTL',
+		-17 :	'VmbErrorNotImplemented',
+		-18 :	'VmbErrorNotSupported',
+		-19 :	'VmbErrorIncomplete'
 }
 
 # Initialize the Vimba library
@@ -51,17 +51,14 @@ def VmbStartup() :
 	vimba = ct.cdll.LoadLibrary( vimba_path )
 	# Initialize the library
 	error = vimba.VmbStartup()
-	if error : print( error_message[error] )
+	if error : print( 'Error: Cannot start Vimba ({}).'.format(error_type[error]) )
 	# Send discovery packet to GigE cameras
 	error = vimba.VmbFeatureCommandRun( ct.c_void_p( 1 ), 'GeVDiscoveryAllOnce' )
-	if error : print( error_message[error] )
+	if error : print( 'Error: Cannot discover GigabitEthernet camera ({}).'.format(error_type[error]) )
 
 # Release the Vimba library
 def VmbShutdown() :
-	# Release the library
-	error = vimba.VmbShutdown()
-	if error : print( error_message[error] )
-
+	vimba.VmbShutdown()
 
 # Vimba frame structure
 class VmbFrame( ct.Structure ) :
@@ -105,25 +102,25 @@ class VmbCamera( object ) :
 	def Open( self ) :
 		# Connect the camera
 		error = vimba.VmbCameraOpen( self.id, 1, ct.byref( self.handle ) )
-		if error : print( error_message[error] )
+		if error : print( 'Error: Cannot open the camera ({}).'.format(error_type[error]) )
 		# Adjust packet size automatically
 		error = vimba.VmbFeatureCommandRun( self.handle, 'GVSPAdjustPacketSize' )
-		if error : print( error_message[error] )
+		if error : print( 'Error: Cannot adjust the packet size ({}).'.format(error_type[error]) )
 		# Query image parameters
 		tmp_value = ct.c_int()
 		error = vimba.VmbFeatureIntGet( self.handle, 'Width', ct.byref( tmp_value ) )
-		if error : print( error_message[error] )
+		if error : print( 'Error: Cannot get the image width ({}).'.format(error_type[error]) )
 		self.width = tmp_value.value
 		error = vimba.VmbFeatureIntGet( self.handle, 'Height', ct.byref( tmp_value ) )
-		if error : print( error_message[error] )
+		if error : print( 'Error: Cannot get the image height ({}).'.format(error_type[error]) )
 		self.height = tmp_value.value
 		error = vimba.VmbFeatureIntGet( self.handle, 'PayloadSize', ct.byref( tmp_value ) )
-		if error : print( error_message[error] )
+		if error : print( 'Error: Cannot get the image payload size ({}).'.format(error_type[error]) )
 		self.payloadsize = tmp_value.value
 	# Close the camera
 	def Close( self ) :
 		error = vimba.VmbCameraClose( self.handle )
-		if error : print( error_message[error] )
+		if error : print( 'Error: Cannot close the camera ({}).'.format(error_type[error]) )
 	# Start the acquisition
 	def StartCapture( self, frame_callback, frame_buffer_size = 10 ) :
 		# Register the external frame callback function
@@ -136,31 +133,31 @@ class VmbCamera( object ) :
 			self.frame_buffer[i].bufferSize = ct.c_uint32( self.payloadsize )
 			# Announce the frame
 			error = vimba.VmbFrameAnnounce( self.handle, ct.byref( self.frame_buffer[i] ), ct.sizeof( self.frame_buffer[i] ) )
-			if error : print( error_message[error] )
+			if error : print( 'Error: Cannot announce the frame ({}).'.format(error_type[error]) )
 		# Start capture engine
 		error = vimba.VmbCaptureStart( self.handle )
-		if error : print( error_message[error] )
+		if error : print( 'Error: Cannot start the capture ({}).'.format(error_type[error]) )
 		# Queue the frames
 		for i in range( frame_buffer_size ) :
 			error = vimba.VmbCaptureFrameQueue( self.handle, ct.byref( self.frame_buffer[i] ), self.vmb_frame_callback )
-			if error : print( error_message[error] )
+			if error : print( 'Error: Cannot queue the frame ({}).'.format(error_type[error]) )
 		# Start acquisition
 		error = vimba.VmbFeatureCommandRun( self.handle, 'AcquisitionStart' )
-		if error : print( error_message[error] )
+		if error : print( 'Error: Cannot start the acquisition ({}).'.format(error_type[error]) )
 	# Stop the acquisition
 	def StopCapture( self ) :
 		# Stop acquisition
 		error = vimba.VmbFeatureCommandRun( self.handle, 'AcquisitionStop' )
-		if error : print( error_message[error] )
+		if error : print( 'Error: Cannot stop the acquisition ({}).'.format(error_type[error]) )
 		# Flush the frame queue
 		error = vimba.VmbCaptureQueueFlush( self.handle )
-		if error : print( error_message[error] )
+		if error : print( 'Error: Cannot flush the frame queue ({}).'.format(error_type[error]) )
 		# Stop capture engine
 		error = vimba.VmbCaptureEnd( self.handle )
-		if error : print( error_message[error] )
+		if error : print( 'Error: Cannot end the capture ({}).'.format(error_type[error]) )
 		# Revoke frames
 		error = vimba.VmbFrameRevokeAll( self.handle )
-		if error : print( error_message[error] )
+		if error : print( 'Error: Cannot revoke the frames ({}).'.format(error_type[error]) )
 		# Initialize the frame buffer
 		self.frame_buffer = []
 	# Function called by Vimba to receive the frame
@@ -171,7 +168,7 @@ class VmbCamera( object ) :
 			self.frame_callback( frame.contents )
 		# Requeue the frame so it can be filled again
 		error = vimba.VmbCaptureFrameQueue( camera, frame, self.vmb_frame_callback )
-		if error : print( error_message[error] )
+		if error : print( 'Error: Cannot requeue the frame ({}).'.format(error_type[error]) )
 
 # Vimba stereo camera
 class VmbStereoCamera( object ) :
