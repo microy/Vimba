@@ -35,6 +35,25 @@ def VmbShutdown() :
 	# Release the library
 	vimba.VmbShutdown()
 
+# Vimba camera information structure
+class VmbCameraInfo( ct.Structure ) :
+    _fields_ = [ ( 'cameraIdString', ct.c_char_p ),
+                 ( 'cameraName', ct.c_char_p ),
+                 ( 'modelName', ct.c_char_p ),
+                 ( 'serialString', ct.c_char_p ),
+                 ( 'permittedAccess', ct.c_uint32 ),
+                 ( 'interfaceIdString', ct.c_char_p ) ]
+
+# Retrieve a list of all cameras
+def VmbCamerasList() :
+        camera_found_number = ct.c_uint32( -1 )
+        # Call once just to get the number of cameras
+        vimba.VmbCamerasList( None, 0, byref(camera_found_number), ct.sizeof(VmbCameraInfo) )
+        camera_info = (VmbCameraInfo * camera_found_number.value)()
+        # Call again to get the features
+        vimba.VmbCamerasList( camera_info, camera_found_number.value, byref(camera_found_number), ct.sizeof(VmbCameraInfo) )
+        return list( camera for camera in camera_info )
+
 # Vimba frame structure
 class VmbFrame( ct.Structure ) :
 	# VmbFrame structure fields
