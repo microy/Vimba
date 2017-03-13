@@ -36,7 +36,7 @@ class QtVmbViewer( QtGui.QWidget ) :
 		# Initialize Vimba
 		Vimba.VmbStartup()
 		# Initialize the camera
-		self.camera = Vimba.VmbCamera( '50-0503323406' )
+		self.camera = Vimba.VmbCamera( Vimba.VmbCamerasList()[0].cameraIdString )
 		# Open the camera
 		self.camera.Open()
 		# Create a QImage to store the image from the camera

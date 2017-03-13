@@ -25,7 +25,7 @@ def ProcessImage( frame ) :
 # Initialize Vimba
 Vimba.VmbStartup()
 # Initialize the camera
-camera = Vimba.VmbCamera( '50-0503323406' )
+camera = Vimba.VmbCamera( Vimba.VmbCamerasList()[0].cameraIdString )
 # Open the camera
 camera.Open()
 # Start image acquisition
