@@ -48,10 +48,10 @@ class VmbCameraInfo( ct.Structure ) :
 def VmbCamerasList() :
         camera_found_number = ct.c_uint32( -1 )
         # Call once just to get the number of cameras
-        vimba.VmbCamerasList( None, 0, byref(camera_found_number), ct.sizeof(VmbCameraInfo) )
+        vimba.VmbCamerasList( None, 0, ct.byref(camera_found_number), ct.sizeof(VmbCameraInfo) )
         camera_info = (VmbCameraInfo * camera_found_number.value)()
         # Call again to get the features
-        vimba.VmbCamerasList( camera_info, camera_found_number.value, byref(camera_found_number), ct.sizeof(VmbCameraInfo) )
+        vimba.VmbCamerasList( camera_info, camera_found_number.value, ct.byref(camera_found_number), ct.sizeof(VmbCameraInfo) )
         return list( camera for camera in camera_info )
 
 # Vimba frame structure
